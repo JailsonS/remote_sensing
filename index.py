@@ -44,7 +44,7 @@ def addCsfi(image: ee.image.Image) -> ee.image.Image:
     return image.addBands(csfi)
 
 
-def getFranctions(image: ee.image.Image) -> ee.image.Image:
+def getFractions(image: ee.image.Image) -> ee.image.Image:
     
     outBandNames = ['gv', 'npv', 'soil', 'cloud']
     
@@ -62,12 +62,6 @@ def getFranctions(image: ee.image.Image) -> ee.image.Image:
     shade = summed.subtract(100).abs().byte().rename("shade")
 
     fractions = fractions.addBands(shade)
-    fractions = fractions.copyProperties(image)\
-        .copyProperties(image, [
-            'system:time_start',
-            'system:time_end',
-            'system:footprint'
-    ])
     
     return image.addBands(fractions)
 

@@ -11,7 +11,6 @@ SR_BAND_SCALE = 1e4
 
 
 def addCloudBands(img):
-    
     cldPrb = ee.Image(img.get('s2cloudless')).select('probability')
     isCloud = cldPrb.gt(CLD_PRB_THRESH).rename('clouds')
 
@@ -20,7 +19,6 @@ def addCloudBands(img):
 
 
 def addShadowBands(img):
-  
     notWater = img.select('SCL').neq(6)
 
     darkPixels = img.select('B8').lt(NIR_DRK_THRESH * SR_BAND_SCALE).multiply(notWater).rename('dark_pixels')
@@ -40,7 +38,6 @@ def addShadowBands(img):
 
 
 def addCloudShadowMask(img):
-
     imgCloud = addCloudBands(img)
     imgCloudShadow = addShadowBands(imgCloud)
 
@@ -53,3 +50,13 @@ def addCloudShadowMask(img):
     return imgCloudShadow.addBands(isCldShdw_)
 
 
+def removeCloudFeat(image):
+    return ee.Image(image)\
+        .copyProperties(
+            source=image,
+            exclude=image.propertyNames().filter(
+                ee.Filter.Or(
+                    ee.Filter.stringStartsWith('item', 's2clo')
+                )
+            )
+        )
